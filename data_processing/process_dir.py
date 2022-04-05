@@ -1,4 +1,5 @@
 import os
+import sys
 
 import soundfile as sf
 
@@ -30,7 +31,9 @@ class DirectoryProcessor:
             break
 
     def create_subfolder_and_return_subfolder(self, audio_id: str):
-        subfolder = os.path.join(self.out_dir, audio_id[-4])
+        print(audio_id[:-4])
+        sys.exit()
+        subfolder = os.path.join(self.out_dir, audio_id[:-4])
         os.mkdir(subfolder)
         return subfolder
 
