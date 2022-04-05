@@ -16,9 +16,14 @@ class DirectoryProcessor:
     def process(self, directory: str):
         files = os.listdir(directory)
         for file in files:
+            print(f"Processing file: {file}")
             full_file_path = os.path.join(directory, file)
+
+            print("Loading and segmenting...")
             segments = self.audio_converter.convert_file_to_segments(full_file_path)
             file_out_dir = self.create_subfolder_and_return_subfolder(file)
+
+            print("Saving to segments...")
             self.segments_to_files(file_out_dir, segments)
             break
 

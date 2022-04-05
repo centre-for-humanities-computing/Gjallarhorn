@@ -3,7 +3,6 @@ from enum import Enum
 import ffmpeg
 import numpy as np
 import pandas as pd
-import soundfile as sf
 import torch
 
 from data_processing.custom_segmentation import CustomSegmentationStrategy
