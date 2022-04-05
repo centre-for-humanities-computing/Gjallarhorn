@@ -35,6 +35,9 @@ class DirectoryProcessor:
 
     def create_subfolder_and_return_subfolder(self, audio_id: str):
         subfolder = os.path.join(self.out_dir, audio_id[:-4])
+        if os.path.exists(subfolder):
+            return None
+
         os.mkdir(subfolder)
         return subfolder
 
