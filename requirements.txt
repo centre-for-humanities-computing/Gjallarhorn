@@ -1,3 +1,4 @@
 torch
 soundfile
 onnxruntime
+pandas
