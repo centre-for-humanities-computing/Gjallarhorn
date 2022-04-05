@@ -1,5 +1,4 @@
 import os
-import sys
 
 import soundfile as sf
 
@@ -16,19 +15,23 @@ class DirectoryProcessor:
 
     def process(self, directory: str):
         files = os.listdir(directory)
-        for file in files:
+        for i, file in enumerate(files):
             print(f"Processing file: {file}")
             full_file_path = os.path.join(directory, file)
 
             file_out_dir = self.create_subfolder_and_return_subfolder(file)
-            print(file_out_dir)
+            if not file_out_dir:
+                print(f"File was already processed: {file}")
+                print("Continueing to next")
+                continue
 
             print("Loading and segmenting...")
             segments = self.audio_converter.convert_file_to_segments(full_file_path)
 
-            print("Saving to segments...")
+            print(f"Saving to segments to: {full_file_path}")
             self.segments_to_files(file_out_dir, segments)
-            break
+            if i % 10 == 0:
+                print(f"progress: {i}/{len(files)}")
 
     def create_subfolder_and_return_subfolder(self, audio_id: str):
         subfolder = os.path.join(self.out_dir, audio_id[:-4])
@@ -50,5 +53,3 @@ if __name__ == '__main__':
 
     dir_processor = DirectoryProcessor(out_dir=args.directory_out)
     dir_processor.process(args.directory_in)
-
-
