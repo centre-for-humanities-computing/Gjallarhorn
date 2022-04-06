@@ -7,11 +7,11 @@ from data_processing.convert_audiofile_to_segments import AudioConvert, Method
 
 class DirectoryProcessor:
 
-    def __init__(self, out_dir: str):
+    def __init__(self, out_dir: str, use_gpu: bool = False):
         self.out_dir = out_dir
 
         method = Method.SILERO
-        self.audio_converter = AudioConvert(method=method)
+        self.audio_converter = AudioConvert(method=method, use_gpu=use_gpu)
 
     def process(self, directory: str):
         files = os.listdir(directory)
@@ -52,6 +52,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Segment all audio files in a given directory')
     parser.add_argument("--directory_in", default="/work/2011-11", type=str)
     parser.add_argument("--directory_out", default="/work/processed_wav", type=str)
+    parser.add_argument("--use_gpu", action="store_true")
     args = parser.parse_args()
 
     dir_processor = DirectoryProcessor(out_dir=args.directory_out)

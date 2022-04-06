@@ -7,13 +7,17 @@ import torch.nn.functional as F
 
 class VADSilero:
 
-    def __init__(self, model_path: str = "./models/model.onnx"):
+    def __init__(self, model_path: str = "./models/model.onnx", use_gpu: bool = False):
 
         self.sampling_rate = 16000
         session_options = onnxruntime.SessionOptions()
         session_options.graph_optimization_level = onnxruntime.GraphOptimizationLevel.ORT_ENABLE_ALL
+        if use_gpu:
+            providers = ["GPUExecutionProvider"]
+        else:
+            providers = ["CPUExecutionProvider"]
         self.ort_session = onnxruntime.InferenceSession(model_path, sess_options=session_options,
-                                                        providers=['CPUExecutionProvider'])
+                                                        providers=providers)
 
     def segment(self, audio: torch.Tensor):
         speech_timestamps = self._get_speech_ts_adaptive(audio)

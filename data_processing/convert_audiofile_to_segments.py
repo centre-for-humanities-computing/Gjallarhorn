@@ -16,9 +16,9 @@ class Method(Enum):
 
 class AudioConvert:
 
-    def __init__(self, method: Method = Method.CUSTOM):
+    def __init__(self, method: Method = Method.CUSTOM, use_gpu: bool = False):
         self.custom_segmentation = CustomSegmentationStrategy()
-        self.custom_speaker_activity_detection = VADSilero()
+        self.custom_speaker_activity_detection = VADSilero(use_gpu=use_gpu)
         self.method = method
 
     @staticmethod
