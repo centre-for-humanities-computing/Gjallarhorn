@@ -13,7 +13,7 @@ class VADSilero:
         session_options = onnxruntime.SessionOptions()
         session_options.graph_optimization_level = onnxruntime.GraphOptimizationLevel.ORT_ENABLE_ALL
         if use_gpu:
-            providers = ["GPUExecutionProvider"]
+            providers = ["CUDAExecutionProvider"]
         else:
             providers = ["CPUExecutionProvider"]
         self.ort_session = onnxruntime.InferenceSession(model_path, sess_options=session_options,

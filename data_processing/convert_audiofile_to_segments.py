@@ -51,7 +51,7 @@ class AudioConvert:
 
 if __name__ == '__main__':
     method = Method.SILERO
-    converter = AudioConvert(method=method)
+    converter = AudioConvert(method=method, use_gpu=True)
     audio_files = [
         #"/media/rafje/danspeech/data_mining/unlabeled/podcasts/foelg_pengende/Foelg-pengene--Hvem-sk_5e5eee8c464747fdaab37a30a626df9b_192.mp3",
         #"/media/rafje/danspeech/data_mining/unlabeled/podcasts/24_spørgsmål_til_professoren/Historier_fra_de_varme_lande.mp3",
