@@ -33,7 +33,7 @@ class AudioConvert:
         return numpy_array
 
     def convert_file_to_segments(self, audiofile_path: str):
-        audio = self.read_file_to_np(audiofile_path)[0:16000 * 60]
+        audio = self.read_file_to_np(audiofile_path)
         audio_tensor = torch.Tensor(audio)
 
         if self.method == Method.CUSTOM:
