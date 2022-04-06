@@ -55,5 +55,5 @@ if __name__ == '__main__':
     parser.add_argument("--use_gpu", action="store_true")
     args = parser.parse_args()
 
-    dir_processor = DirectoryProcessor(out_dir=args.directory_out)
+    dir_processor = DirectoryProcessor(out_dir=args.directory_out, use_gpu=args.use_gpu)
     dir_processor.process(args.directory_in)
