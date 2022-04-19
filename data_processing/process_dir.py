@@ -30,7 +30,7 @@ class DirectoryProcessor:
             print("Loading and segmenting...")
             segments = self.audio_converter.convert_file_to_segments(full_file_path)
 
-            print(f"Saving to segments to: {full_file_path}")
+            print(f"Saving to segments to: {file_out_dir}")
             self.segments_to_files(file_out_dir, segments)
             self.write_tsv_format(file_out_dir, segments)
             if i % 10 == 0:
