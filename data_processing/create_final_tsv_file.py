@@ -22,4 +22,3 @@ if __name__ == '__main__':
     args = parser.parse_args()
     traverse_and_create_new_tsv_file(args.directory_root, args.tsv_out)
 
-    dir_processor.process(args.directory_in)
