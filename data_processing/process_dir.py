@@ -1,5 +1,7 @@
 import os
+from typing import List, Tuple
 
+import numpy as np
 import soundfile as sf
 
 from data_processing.convert_audiofile_to_segments import AudioConvert, Method
@@ -10,7 +12,7 @@ class DirectoryProcessor:
     def __init__(self, out_dir: str, use_gpu: bool = False):
         self.out_dir = out_dir
 
-        method = Method.SILERO
+        method = Method.SIMPLE
         self.audio_converter = AudioConvert(method=method, use_gpu=use_gpu)
 
     def process(self, directory: str):
@@ -30,8 +32,17 @@ class DirectoryProcessor:
 
             print(f"Saving to segments to: {full_file_path}")
             self.segments_to_files(file_out_dir, segments)
+            self.write_tsv_format(file_out_dir, segments)
             if i % 10 == 0:
                 print(f"progress: {i}/{len(files)}")
+
+    def write_tsv_format(self, files_out_dir: str, audio_segments: List[Tuple[int, int, np.array]]):
+        write_strings_list = []
+        for i, segment in enumerate(audio_segments):
+            write_strings_list.append(f"{i}.wav\t{len(segment[2])}")
+
+        with open(os.path.join(files_out_dir, "metadata.tsv")) as f:
+            f.write("\n".join(write_strings_list))
 
     def create_subfolder_and_return_subfolder(self, audio_id: str):
         subfolder = os.path.join(self.out_dir, audio_id[:-4])
@@ -41,7 +52,7 @@ class DirectoryProcessor:
         os.mkdir(subfolder)
         return subfolder
 
-    def segments_to_files(self, files_out_dir: str, audio_segments):
+    def segments_to_files(self, files_out_dir: str, audio_segments: List[Tuple[int, int, np.array]]):
         for i, segment in enumerate(audio_segments):
             sf.write(f"{files_out_dir}/{i}.wav", segment[2], samplerate=16000)
 

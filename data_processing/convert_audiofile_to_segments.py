@@ -6,20 +6,31 @@ import pandas as pd
 import torch
 
 from data_processing.custom_segmentation import CustomSegmentationStrategy
+from data_processing.simple_segmentation import SimpleSegmentation
 from data_processing.voice_activity_detection import VADSilero
 
 
 class Method(Enum):
     CUSTOM = "CUSTOM"
     SILERO = "SILERO"
+    SIMPLE = "SIMPLE"
 
 
 class AudioConvert:
 
     def __init__(self, method: Method = Method.CUSTOM, use_gpu: bool = False):
-        self.custom_segmentation = CustomSegmentationStrategy()
-        self.custom_speaker_activity_detection = VADSilero(use_gpu=use_gpu)
-        self.method = method
+        if method == method.SILERO:
+            self.custom_speaker_activity_detection = VADSilero(use_gpu=use_gpu)
+            self.custom_segmentation = None
+            self.simple_segmentation = None
+        elif method == method.CUSTOM:
+            self.custom_segmentation = CustomSegmentationStrategy()
+            self.custom_speaker_activity_detection = None
+            self.simple_segmentation = None
+        elif method == method.SIMPLE:
+            self.custom_segmentation = None
+            self.custom_speaker_activity_detection = None
+            self.simple_segmentation = SimpleSegmentation()
 
     @staticmethod
     def read_file_to_np(audiofile_path: str):
@@ -44,6 +55,8 @@ class AudioConvert:
         elif self.method == Method.SILERO:
             timestamps = self.custom_speaker_activity_detection._get_speech_ts_adaptive(audio_tensor)
             audio_segments = self.custom_speaker_activity_detection.audio_to_segments(audio, timestamps)
+        elif self.method == Method.SIMPLE:
+            audio_segments = self.simple_segmentation.segment(audio_tensor)
         else:
             raise RuntimeError()
 
