@@ -16,10 +16,16 @@ class DirectoryProcessor:
         self.audio_converter = AudioConvert(method=method, use_gpu=use_gpu)
 
     def process(self, directory: str):
-        files = os.listdir(directory)
-        for i, file in enumerate(files):
+        mp3_files = []
+        for root, subdirs, files in os.walk(directory):
+            for f in files:
+                if f[-3:] == "tsv":
+                    mp3_files.append((root, f))
+
+        print(mp3_files[200:250])
+        for i, (root, file) in enumerate(mp3_files):
             print(f"Processing file: {file}")
-            full_file_path = os.path.join(directory, file)
+            full_file_path = os.path.join(root, file)
 
             file_out_dir = self.create_subfolder_and_return_subfolder(file)
             if not file_out_dir:
@@ -34,7 +40,7 @@ class DirectoryProcessor:
             self.segments_to_files(file_out_dir, segments)
             self.write_tsv_format(file_out_dir, segments)
             if i % 10 == 0:
-                print(f"progress: {i}/{len(files)}")
+                print(f"progress: {i}/{len(mp3_files)}")
 
     def write_tsv_format(self, files_out_dir: str, audio_segments: List[Tuple[int, int, np.array]]):
         write_strings_list = []
