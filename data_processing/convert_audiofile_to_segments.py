@@ -19,6 +19,7 @@ class Method(Enum):
 class AudioConvert:
 
     def __init__(self, method: Method = Method.CUSTOM, use_gpu: bool = False):
+        self.method = method
         if method == method.SILERO:
             self.custom_speaker_activity_detection = VADSilero(use_gpu=use_gpu)
             self.custom_segmentation = None
@@ -64,7 +65,7 @@ class AudioConvert:
 
 if __name__ == '__main__':
     method = Method.SILERO
-    converter = AudioConvert(method=method, use_gpu=True)
+    converter = AudioConvert(method=method, use_gpu=False)
     audio_files = [
         #"/media/rafje/danspeech/data_mining/unlabeled/podcasts/foelg_pengende/Foelg-pengene--Hvem-sk_5e5eee8c464747fdaab37a30a626df9b_192.mp3",
         #"/media/rafje/danspeech/data_mining/unlabeled/podcasts/24_spørgsmål_til_professoren/Historier_fra_de_varme_lande.mp3",
