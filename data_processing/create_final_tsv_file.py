@@ -7,11 +7,14 @@ def traverse_and_create_new_tsv_file(traverse_root_path: str, tsv_out_file: str)
             if f[-3:] == "tsv":
                 meta_data_files.append((root, f))
 
-    print(meta_data_files)
-    #for root, f in meta_data_files:
-    #    with open(os.path.join(root, f), "r", encoding="utf-8") as f:
-    #        all_lines = f.read().split("\n")
+    all_lines_final = []
+    for root, f in meta_data_files:
+        with open(os.path.join(root, f), "r", encoding="utf-8") as f:
+            all_lines = f.read().split("\n")
+            all_lines_final += all_lines
 
+    with open(tsv_out_file, "w", encoding="utf-8") as f:
+        f.write("\n".join(all_lines_final))
 
 if __name__ == '__main__':
     import argparse
