@@ -22,7 +22,6 @@ class DirectoryProcessor:
                 if f[-3:] == "mp3":
                     mp3_files.append((root, f))
 
-        print(mp3_files[200:250])
         for i, (root, file) in enumerate(mp3_files):
             print(f"Processing file: {file}")
             full_file_path = os.path.join(root, file)
