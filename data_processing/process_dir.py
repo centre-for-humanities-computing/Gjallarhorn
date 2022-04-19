@@ -19,7 +19,7 @@ class DirectoryProcessor:
         mp3_files = []
         for root, subdirs, files in os.walk(directory):
             for f in files:
-                if f[-3:] == "tsv":
+                if f[-3:] == "mp3":
                     mp3_files.append((root, f))
 
         print(mp3_files[200:250])
