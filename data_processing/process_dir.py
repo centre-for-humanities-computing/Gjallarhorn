@@ -41,7 +41,7 @@ class DirectoryProcessor:
         for i, segment in enumerate(audio_segments):
             write_strings_list.append(f"{i}.wav\t{len(segment[2])}")
 
-        with open(os.path.join(files_out_dir, "metadata.tsv")) as f:
+        with open(os.path.join(files_out_dir, "metadata.tsv"), "w", encoding="utf-8") as f:
             f.write("\n".join(write_strings_list))
 
     def create_subfolder_and_return_subfolder(self, audio_id: str):
