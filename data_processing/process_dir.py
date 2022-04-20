@@ -19,7 +19,7 @@ class DirectoryProcessor:
         mp3_files = []
         for root, subdirs, files in os.walk(directory):
             for f in files:
-                if f[-3:] == "mp3":
+                if f[-3:] == "mp3" or f[-3:] == ".ts":
                     mp3_files.append((root, f))
 
         for i, (root, file) in enumerate(mp3_files):
