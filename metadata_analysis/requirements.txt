@@ -1,0 +1,12 @@
+PyAudio
+pydub
+psycopg2-binary
+wasabi
+black
+multiprocess
+git+https://github.com/HLasse/dejavu
+## Might also need the following:
+# sudo apt-get --allow-releaseinfo-change update -y
+# sudo apt install ffmpeg -y
+# sudo apt install libasound-dev portaudio19-dev libportaudio2 libportaudiocpp0 -y
+# sudo apt install postgresql postgresql-contrib -y
