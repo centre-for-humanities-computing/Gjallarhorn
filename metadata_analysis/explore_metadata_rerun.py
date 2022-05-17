@@ -1,7 +1,7 @@
 """Messing around with audio fingerprinting"""
 
 from typing import List
-from fingerprinter import FingerprintDuplicateRemover
+from audio_fingerprinting.query_fingerprint_index import FingerprintDuplicateRemover
 from pathlib import Path
 
 import pandas as pd
