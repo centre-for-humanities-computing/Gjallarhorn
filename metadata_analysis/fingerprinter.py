@@ -1,13 +1,10 @@
 
 """Class for handling postgresql databases and querying audio files with Dejavu"""
-import glob
 import os
 import re
-from functools import partial
-from pathlib import Path, PosixPath
+from pathlib import Path, 
 from typing import Dict, List, Optional, Set, Union
 
-import numpy as np
 import pandas as pd
 
 import psycopg2
