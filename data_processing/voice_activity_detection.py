@@ -7,7 +7,7 @@ import torch.nn.functional as F
 
 class VADSilero:
 
-    def __init__(self, model_path: str = "./models/model.onnx", use_gpu: bool = False):
+    def __init__(self, model_path: str = "/models/model.onnx", use_gpu: bool = False):
 
         self.sampling_rate = 16000
         session_options = onnxruntime.SessionOptions()

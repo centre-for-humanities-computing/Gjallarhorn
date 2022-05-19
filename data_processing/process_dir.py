@@ -59,7 +59,8 @@ class DirectoryProcessor:
 
     def segments_to_files(self, files_out_dir: str, audio_segments: List[Tuple[int, int, np.array]]):
         for i, segment in enumerate(audio_segments):
-            sf.write(f"{files_out_dir}/{i}.wav", segment[2], samplerate=16000)
+            print(segment[2][21])
+            sf.write(f"{files_out_dir}/{i}.wav", segment[2].numpy().astype(np.int16), samplerate=16000)
 
 
 if __name__ == '__main__':
