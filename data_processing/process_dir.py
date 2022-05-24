@@ -15,7 +15,8 @@ class DirectoryProcessor:
         method = Method.SIMPLE
         self.audio_converter = AudioConvert(method=method, use_gpu=use_gpu)
 
-        self.duplicates_list = self.load_duplicates()
+        duplicates_list = self.load_duplicates()
+        self.dedup_lookup_dict = {k: 1 for k in duplicates_list}
 
     def load_duplicates(self):
         dedup_files = ["/work/data/p1-r24syv-dedup/metadata/p1_no_reruns.txt",
@@ -41,7 +42,9 @@ class DirectoryProcessor:
         for root, subdirs, files in os.walk(directory):
             for f in files:
                 if f[-3:] == "mp3" or f[-3:] == ".ts":
-                    mp3_files.append((root, f))
+                    print(f[:-4])
+                    if f[:-4] in self.dedup_lookup_dict:
+                        mp3_files.append((root, f))
 
         for i, (root, file) in enumerate(mp3_files):
             print(f"Processing file: {file}")
