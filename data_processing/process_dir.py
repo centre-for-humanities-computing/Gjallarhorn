@@ -32,7 +32,7 @@ class DirectoryProcessor:
     def load_dedup_file_list(file_path: str):
         all_uuids_of_duplicates = []
         with open(file_path, "r", encoding="utf-8") as f:
-            data = f.read()
+            data = f.read().split("\n")
             for line in data:
                 specific_uuid = line.split("/")[-1]
                 all_uuids_of_duplicates.append(specific_uuid)
@@ -43,6 +43,8 @@ class DirectoryProcessor:
         mp3_files = []
         for root, subdirs, files in os.walk(directory):
             for f in files:
+                print(f)
+                print(f in self.dedup_lookup_dict)
                 if f in self.dedup_lookup_dict:
                     mp3_files.append((root, f))
 
