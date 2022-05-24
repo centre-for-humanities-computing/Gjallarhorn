@@ -43,10 +43,8 @@ class DirectoryProcessor:
         mp3_files = []
         for root, subdirs, files in os.walk(directory):
             for f in files:
-                if f[-3:] == "mp3" or f[-3:] == ".ts":
-                    print(f[:-4])
-                    if f[:-4] in self.dedup_lookup_dict:
-                        mp3_files.append((root, f))
+                if f in self.dedup_lookup_dict:
+                    mp3_files.append((root, f))
 
         for i, (root, file) in enumerate(mp3_files):
             print(f"Processing file: {file}")
