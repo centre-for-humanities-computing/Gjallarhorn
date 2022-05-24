@@ -15,6 +15,27 @@ class DirectoryProcessor:
         method = Method.SIMPLE
         self.audio_converter = AudioConvert(method=method, use_gpu=use_gpu)
 
+        self.duplicates_list = self.load_duplicates()
+
+    def load_duplicates(self):
+        dedup_files = ["/work/data/p1-r24syv-dedup/metadata/p1_no_reruns.txt",
+                       "/work/data/p1-r24syv-dedup/metadata/r24syv_no_reruns.txt"]
+
+        all_duplicates = []
+        for dedup_file in dedup_files:
+            all_duplicates += self.load_duplicates_from_file(dedup_file)
+
+        return all_duplicates
+
+    @staticmethod
+    def load_duplicates_from_file(file_path: str):
+        all_uuids_of_duplicates = []
+        with open(file_path, "r", encoding="utf-8") as f:
+            data = f.read()
+            for line in data:
+                specific_uuid = line.split("/")[-1]
+                all_uuids_of_duplicates.append(specific_uuid)
+
     def process(self, directory: str):
         mp3_files = []
         for root, subdirs, files in os.walk(directory):
@@ -59,7 +80,6 @@ class DirectoryProcessor:
 
     def segments_to_files(self, files_out_dir: str, audio_segments: List[Tuple[int, int, np.array]]):
         for i, segment in enumerate(audio_segments):
-            print(segment[2][21])
             sf.write(f"{files_out_dir}/{i}.wav", segment[2].numpy().astype(np.int16), samplerate=16000)
 
 
@@ -72,5 +92,9 @@ if __name__ == '__main__':
     parser.add_argument("--use_gpu", action="store_true")
     args = parser.parse_args()
 
+    import time
+
+    start = time.time()
     dir_processor = DirectoryProcessor(out_dir=args.directory_out, use_gpu=args.use_gpu)
     dir_processor.process(args.directory_in)
+    print(time.time() - start)
