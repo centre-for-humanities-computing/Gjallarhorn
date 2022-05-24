@@ -6,7 +6,7 @@ jobs = []
 file_outs = []
 
 all_dirs = os.listdir("/work/data/p1-r24syv/files/drp1")
-processes_output_dir = "./processes_output"
+processes_output_dir = "./processes_output_p1"
 
 for dir in all_dirs:
     out_dir = f"/work/data/p1-r24syv-segmented/p1/{dir}"
