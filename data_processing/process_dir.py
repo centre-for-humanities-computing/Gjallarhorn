@@ -15,27 +15,29 @@ class DirectoryProcessor:
         method = Method.SIMPLE
         self.audio_converter = AudioConvert(method=method, use_gpu=use_gpu)
 
-        duplicates_list = self.load_duplicates()
+        duplicates_list = self.load_all_dedupped_files()
         self.dedup_lookup_dict = {k: 1 for k in duplicates_list}
 
-    def load_duplicates(self):
+    def load_all_dedupped_files(self):
         dedup_files = ["/work/data/p1-r24syv-dedup/metadata/p1_no_reruns.txt",
                        "/work/data/p1-r24syv-dedup/metadata/r24syv_no_reruns.txt"]
 
         all_duplicates = []
         for dedup_file in dedup_files:
-            all_duplicates += self.load_duplicates_from_file(dedup_file)
+            all_duplicates += self.load_dedup_file_list(dedup_file)
 
         return all_duplicates
 
     @staticmethod
-    def load_duplicates_from_file(file_path: str):
+    def load_dedup_file_list(file_path: str):
         all_uuids_of_duplicates = []
         with open(file_path, "r", encoding="utf-8") as f:
             data = f.read()
             for line in data:
                 specific_uuid = line.split("/")[-1]
                 all_uuids_of_duplicates.append(specific_uuid)
+
+        return all_uuids_of_duplicates
 
     def process(self, directory: str):
         mp3_files = []
