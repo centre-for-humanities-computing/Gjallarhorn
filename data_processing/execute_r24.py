@@ -12,7 +12,9 @@ for dir in all_dirs:
         continue
 
     out_dir = f"/work/data/p1-r24syv-segmented/r24syv/{dir}"
-    os.makedirs(out_dir)
+
+    if not os.path.isdir(out_dir):
+        os.makedirs(out_dir)
 
     in_dir = f"/work/data/p1-r24syv/files/24syv/{dir}"
     process = Popen(
