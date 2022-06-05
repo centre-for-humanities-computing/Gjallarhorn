@@ -1,3 +1,6 @@
 torch
 soundfile
 onnxruntime
+pandas
+ffmpeg-python
+matplotlib

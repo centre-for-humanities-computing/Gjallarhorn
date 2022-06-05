@@ -1,8 +1,7 @@
-
 """Class for handling postgresql databases and querying audio files with Dejavu"""
 import os
 import re
-from pathlib import Path, 
+from pathlib import Path
 from typing import Dict, List, Optional, Set, Union
 
 import pandas as pd
