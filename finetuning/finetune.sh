@@ -1,0 +1,1 @@
+fairseq-hydra-train task.data="/mnt/data/asr_training/fairseq-compatible/manifest" common.wandb_project=gjallarhorn model.w2v_path=/home/arpelarpe/models/fairseq_original/xlsr2_300m.pt checkpoint.reset_dataloader=True checkpoint.reset_optimizer=True common.reset_logging=True --config-dir /home/arpelarpe/projects/Gjallarhorn/fairseq_configs/finetuning --config-name xlrs_finetune
