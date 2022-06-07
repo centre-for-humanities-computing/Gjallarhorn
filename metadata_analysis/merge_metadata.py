@@ -149,7 +149,7 @@ def mark_duplicates_time_of_day(
     metadata["hour"] = pd.to_datetime(metadata["timestamp"])
     metadata["hour"] = metadata["hour"].dt.hour
     metadata["is_tod_rerun"] = np.where(
-        (metadata["hour"] > latest_time) & (metadata["hour"] < earliest_time),
+        (metadata["hour"] > latest_time) | (metadata["hour"] < earliest_time),
         True,
         False,
     )
@@ -224,7 +224,10 @@ if __name__ == "__main__":
 
     p1_metadata.to_csv(SAVE_FOLDER / "p1_metadata_merged.csv", index=False)
     p1_no_reruns = p1_metadata[p1_metadata["is_rerun"] == False]
-    p1_no_reruns["file_path"].to_csv("p1_no_reruns.csv", index=False)
+    # only keep entries with a matching file
+    p1_no_reruns = p1_no_reruns[~(p1_no_reruns["file_path"].isnull())]
+    print(f"Number of files left: {p1_no_reruns.shape[0]}")
+    p1_no_reruns["file_path"].to_csv(SAVE_FOLDER / "p1_no_reruns.txt", index=False, header=False)
 
     ## Radio 24syv
     r24_filedict = get_filepath_dict(R24_FOLDERS)
@@ -241,4 +244,7 @@ if __name__ == "__main__":
     r24_metadata = merge_rerun_columns(r24_metadata)
     r24_metadata.to_csv(SAVE_FOLDER / "r24syv_metadata_merged.csv", index=False)
     r24_no_reruns = r24_metadata[r24_metadata["is_rerun"] == False]
-    r24_no_reruns["file_path"].to_csv("r24syv_no_reruns.csv", index=False)
+    r24_no_reruns = r24_no_reruns[~(r24_no_reruns["file_path"].isnull())]
+
+    print(f"Number of files left: {r24_no_reruns.shape[0]}")
+    r24_no_reruns["file_path"].to_csv(SAVE_FOLDER / "r24syv_no_reruns.txt", index=False, header=False)
