@@ -13,7 +13,6 @@ vocab = {"<pad>": 0, "<unk>": 1, " ": 2, "a": 3, "b": 4, "c": 5, "d": 6, "e": 7,
 
 print(dataset)
 
-
 def all_in_vocab(reference):
     has_all_in_vocab = True
     for c in reference:
@@ -83,13 +82,13 @@ def download_data_split(data_handle):
         sf.write(audio_file_out, resampled_audio, samplerate=16000)
         if i != 0 and i % 50 == 0:
             print(f"Progress: {i}/{len(dataset[data_handle])}")
-            with open(f"./manifest/{data_handle}.tsv", "w", encoding="utf-8") as f:
+            with open(f"manifest/{data_handle}.tsv", "w", encoding="utf-8") as f:
                 f.write("\n".join(tsv))
 
-            with open(f"./manifest/{data_handle}.wrd", "w", encoding="utf-8") as f:
+            with open(f"manifest/{data_handle}.wrd", "w", encoding="utf-8") as f:
                 f.write("\n".join(wrd))
 
-            with open(f"./manifest/{data_handle}.ltr", "w", encoding="utf-8") as f:
+            with open(f"manifest/{data_handle}.ltr", "w", encoding="utf-8") as f:
                 f.write("\n".join(ltr))
 
 

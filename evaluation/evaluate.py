@@ -1,41 +1,76 @@
+from collections import defaultdict
+from pathlib import Path
+from typing import List
+
+import librosa
+import pandas as pd
+from pandas.io.formats.style import Styler
 import soundfile as sf
 from datasets import load_dataset
-import librosa
 
+from data.load_common_voice import load_common_voice
+from data.load_nst_test import load_nst_data
+from data.load_puzzle_of_danish import load_puzzle_of_danish
 from huggingsound import SpeechRecognitionModel
-import pandas as pd
 
-from pathlib import Path
+from wasabi import Printer
 
-
-model_id = "Alvenir/wav2vec2-base-da-ft-nst"
-SAVE_DIR = Path("/data") / "puzzle_of_danish_segmented"
-
-
-# nst = load_dataset("Alvenir/nst-da-16khz", split="test")
-
-pod = pd.read_csv("clean_data_transcript_filenames.csv")
-# dropping 10 very long audio segments to avoid oom erros
-pod = pod[pod["Duration"] < 60]
-pod["path"] = pod["filename"].apply(lambda x: SAVE_DIR / x)
-pod["file_duration"] = pod["path"].apply(lambda x: librosa.get_duration(filename=x))
-pod["time_dif"] = pod["Duration"] - pod["file_duration"]
+def calc_performance(model, references: List[str], predictions: List[dict]):
+    references = [
+        {"transcription": t} for t in references
+    ]
+    wer = model.evaluate(references=references, predictions=predictions)
+    return wer
 
 
-print(pod.shape[0])
-pod = pod[pod["file_duration"] >= 3]
-print(pod.shape[0])
+if __name__ == "__main__":
+    msg = Printer(timestamp=True)
 
-paths = [SAVE_DIR / p for p in pod["filename"].tolist()]
+    model_ids = ["Alvenir/wav2vec2-base-da-ft-nst"]
 
-model = SpeechRecognitionModel(model_id, device="cuda")
-# transcriptions = model.transcribe(paths[:5])
+    nst_files, nst_references = load_nst_data()
+    pod_files, pod_references = load_puzzle_of_danish()
+    cv_files, cv_references = load_common_voice()
 
-# print([t["transcription"] for t in transcriptions])
+    data_paths = [nst_files, pod_files, cv_files]
+    data_references = [nst_references, pod_references, cv_references]
+    data_sets = ["NST", "PoD", "CV"]
 
-eval_dict = [
-    {"transcription": t, "path": p}
-    for t, p in zip(pod["Transcription"].tolist(), paths)
-]
-wer = model.evaluate(eval_dict)
-print(wer)
+    performance = defaultdict(lambda: {})
+    for model_id in model_ids:
+        msg.divider(f"Evaluating {model_id}")
+        model = SpeechRecognitionModel(model_id, device="cuda")
+        for files, references, data_set in zip(data_paths, data_references, data_sets):
+            
+            with msg.loading(f"Transcribing {data_set} with {model_id}..."):
+                transcriptions = model.transcribe(files, batch_size=25)
+            msg.good(f"Finished transcribing {data_set} with {model_id}!")
+            
+            with msg.loading(f"Calculating wer and cer..."):
+                perf = calc_performance(model, references, transcriptions)
+            msg.good("Finished calculating wer and cer!")
+            performance[data_set][model_id] = perf
+
+    df = pd.DataFrame.from_dict({(i,j): performance[i][j] 
+                           for i in performance.keys() 
+                           for j in performance[i].keys()},
+                       orient='index')
+
+    df = df.rename_axis(["dataset", "model"]).reset_index()
+    df.to_csv("transcription_performance.csv")
+
+    df_p = df.pivot(index="model", columns="dataset", values=["wer", "cer"])
+    df_p = df_p.rename_axis("")
+
+
+    print(df_p.to_latex(multicolumn=True, float_format="%.2f"))
+
+    s = Styler(df_p, precision=2).highlight_max(axis=0, props='bfseries: ;').to_latex(hrules=True, multicol_align="c")
+    print(s)
+
+    # print(df_p.to_latex(hrules=True, sparse_index=True))
+
+    # s = df_p.style.highlight_max(axis=0, props='cellcolor:{red}; bfseries: ;')
+    # print(s.to_latex())
+
+    

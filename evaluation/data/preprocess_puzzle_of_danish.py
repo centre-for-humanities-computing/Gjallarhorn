@@ -167,15 +167,12 @@ def clean_reference(reference: pd.Series):
 
 if __name__ == "__main__":
 
-    BASE_DIR = Path("/data") / "puzzle-of-danish" / "christina-data"
+    BASE_DIR = Path("/work") / "data" / "speech-finetuning" / "puzzle_of_danish" / "puzzle-of-danish" / "christina-data"
     DATA_DIR = BASE_DIR / "PoD_sound"
-    SAVE_DIR = Path("/data") / "puzzle_of_danish_segmented"
+    SAVE_DIR = Path("/work") / "data" / "speech-finetuning" / "puzzle_of_danish" / "puzzle-of-danish_segmented"
     if not SAVE_DIR.exists():
-        # SAVE_DIR.mkdir()
-        pass
-
-    pd.set_option("display.max_columns", None)
-
+        SAVE_DIR.mkdir()
+        
     df = pd.read_csv(BASE_DIR / "clean_data300821.txt", sep="\t")
 
     # A bit of cleaning
@@ -202,9 +199,9 @@ if __name__ == "__main__":
 
     df = df[df["file_exists"] == True]
 
-    # clean transcripts a bit
+    # clean transcripts
     df["Transcription"] = clean_reference(df["Transcription"])
-    # Check if all characters  in vocab
+    # Check if all characters in vocab
     has_all = df["Transcription"].apply(lambda x: all_in_vocab(x))
 
     transcriptions = df["Transcription"].tolist()
@@ -216,9 +213,15 @@ if __name__ == "__main__":
     dur = df["Duration"].sum() / 60 / 60
     print(f"Total duration:  {dur}")
 
+    # Segment audio files into utterances
     df = df.apply(add_filename_col_and_extract_snippet, axis=1)
     df = df[
         ["Pair", "Session", "Interlocutor", "Transcription", "Duration", "filename"]
     ]
+    
+    # add file duration
+    pod["path"] = pod["filename"].apply(lambda x: SAVE_DIR / x)
+    pod["file_duration"] = pod["path"].apply(lambda x: librosa.get_duration(filename=x))
+    pod["time_dif"] = pod["Duration"] - pod["file_duration"]
 
-    df.to_csv("clean_data_transcript_filenames.csv")
+    df.to_csv(BASE_DIR.parent.parent / "pod_data.csv")
