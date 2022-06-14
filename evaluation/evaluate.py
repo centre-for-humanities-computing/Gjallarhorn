@@ -63,7 +63,7 @@ if __name__ == "__main__":
     )
 
     df = df.rename_axis(["dataset", "model"]).reset_index()
-    df.to_csv("transcription_performance.csv")
+    df.to_csv("transcription_performance_gjallarhorn.csv")
 
     df_p = df.pivot(index="model", columns="dataset", values=["wer", "cer"])
     df_p = df_p.rename_axis("")
