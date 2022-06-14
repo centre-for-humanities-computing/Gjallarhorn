@@ -4,16 +4,17 @@ from typing import List
 
 import librosa
 import pandas as pd
-from pandas.io.formats.style import Styler
 import soundfile as sf
+import torch
 from datasets import load_dataset
+from huggingsound import SpeechRecognitionModel
+from pandas.io.formats.style import Styler
+from wasabi import Printer
 
 from data.load_common_voice import load_common_voice
 from data.load_nst_test import load_nst_data
 from data.load_puzzle_of_danish import load_puzzle_of_danish
-from huggingsound import SpeechRecognitionModel
 
-from wasabi import Printer
 
 def calc_performance(model, references: List[str], predictions: List[dict]):
     references = [
@@ -26,7 +27,7 @@ def calc_performance(model, references: List[str], predictions: List[dict]):
 if __name__ == "__main__":
     msg = Printer(timestamp=True)
 
-    model_ids = ["Alvenir/wav2vec2-base-da-ft-nst"]
+    model_ids = ["chcaa/alvenir-wav2vec2-base-da-nst-cv9", "chcaa/xls-r-300m-nst-cv9-da", "Alvenir/wav2vec2-base-da-ft-nst"]
 
     nst_files, nst_references = load_nst_data()
     pod_files, pod_references = load_puzzle_of_danish()
@@ -39,16 +40,17 @@ if __name__ == "__main__":
     performance = defaultdict(lambda: {})
     for model_id in model_ids:
         msg.divider(f"Evaluating {model_id}")
-        model = SpeechRecognitionModel(model_id, device="cuda")
+        model = SpeechRecognitionModel(model_id, device=torch.device("cuda"), use_auth_token=True)
         for files, references, data_set in zip(data_paths, data_references, data_sets):
-            
+
             with msg.loading(f"Transcribing {data_set} with {model_id}..."):
-                transcriptions = model.transcribe(files, batch_size=25)
+                transcriptions = model.transcribe(files, batch_size=10)
             msg.good(f"Finished transcribing {data_set} with {model_id}!")
             
             with msg.loading(f"Calculating wer and cer..."):
                 perf = calc_performance(model, references, transcriptions)
             msg.good("Finished calculating wer and cer!")
+            msg.text(perf)
             performance[data_set][model_id] = perf
 
     df = pd.DataFrame.from_dict({(i,j): performance[i][j] 

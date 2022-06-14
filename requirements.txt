@@ -4,3 +4,7 @@ onnxruntime
 pandas
 ffmpeg-python
 matplotlib
+torchaudio
+huggingsound
+wasabi
+datasets
