@@ -37,7 +37,7 @@ if __name__ == "__main__":
     alv_files, alv_references = load_alvenir_eval()
 
     data_paths = [alv_files, nst_files, pod_files, cv_files]
-    data_references = [alv_files, nst_references, pod_references, cv_references]
+    data_references = [alv_references, nst_references, pod_references, cv_references]
     data_sets = ["Alvenir", "NST", "PoD", "CV"]
 
     performance = defaultdict(lambda: {})
