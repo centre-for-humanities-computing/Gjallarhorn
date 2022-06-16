@@ -29,23 +29,24 @@ def calc_performance(model, references: List[str], predictions: List[dict]):
 if __name__ == "__main__":
     msg = Printer(timestamp=True)
 
-    model_ids = ["chcaa/xls-r-300m-danish-nst-cv9"]
+    model_ids = ["chcaa/xls-r-300m-danish-nst-cv9", "chcaa/xls-r-300m-nst-cv9-da", "chcaa/alvenir-wav2vec2-base-da-nst-cv9", "Alvenir/wav2vec2-base-da-ft-nst"]
 
     nst_files, nst_references = load_nst_data()
     pod_files, pod_references = load_puzzle_of_danish()
     cv_files, cv_references = load_common_voice()
     alv_files, alv_references = load_alvenir_eval()
 
-    data_paths = [nst_files, pod_files, cv_files, alv_files]
-    data_references = [nst_references, pod_references, cv_references, alv_references]
-    data_sets = ["NST", "PoD", "CV", "Alvenir"]
+    data_paths = [alv_files, nst_files, pod_files, cv_files]
+    data_references = [alv_files, nst_references, pod_references, cv_references]
+    data_sets = ["Alvenir", "NST", "PoD", "CV"]
 
     performance = defaultdict(lambda: {})
     for model_id in model_ids:
         msg.divider(f"Evaluating {model_id}")
         model = SpeechRecognitionModel(model_id, device=torch.device("cuda"), use_auth_token=True)
         for files, references, data_set in zip(data_paths, data_references, data_sets):
-
+            if data_set != "Alvenir":
+                continue
             with msg.loading(f"Transcribing {data_set} with {model_id}..."):
                 transcriptions = model.transcribe(files, batch_size=10)
             msg.good(f"Finished transcribing {data_set} with {model_id}!")
@@ -66,7 +67,7 @@ if __name__ == "__main__":
     )
 
     df = df.rename_axis(["dataset", "model"]).reset_index()
-    df.to_csv("transcription_performance_gjallarhorn.csv")
+    df.to_csv("transcription_performance_alvenir.csv")
 
     df_p = df.pivot(index="model", columns="dataset", values=["wer", "cer"])
     df_p = df_p.rename_axis("")
