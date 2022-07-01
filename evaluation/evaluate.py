@@ -45,8 +45,6 @@ if __name__ == "__main__":
         msg.divider(f"Evaluating {model_id}")
         model = SpeechRecognitionModel(model_id, device=torch.device("cuda"), use_auth_token=True)
         for files, references, data_set in zip(data_paths, data_references, data_sets):
-            if data_set != "Alvenir":
-                continue
             with msg.loading(f"Transcribing {data_set} with {model_id}..."):
                 transcriptions = model.transcribe(files, batch_size=10)
             msg.good(f"Finished transcribing {data_set} with {model_id}!")
@@ -68,20 +66,3 @@ if __name__ == "__main__":
 
     df = df.rename_axis(["dataset", "model"]).reset_index()
     df.to_csv("transcription_performance_alvenir.csv")
-
-    df_p = df.pivot(index="model", columns="dataset", values=["wer", "cer"])
-    df_p = df_p.rename_axis("")
-
-    print(df_p.to_latex(multicolumn=True, float_format="%.2f"))
-
-    s = (
-        Styler(df_p, precision=2)
-        .highlight_max(axis=0, props="bfseries: ;")
-        .to_latex(hrules=True, multicol_align="c")
-    )
-    print(s)
-
-    # print(df_p.to_latex(hrules=True, sparse_index=True))
-
-    # s = df_p.style.highlight_max(axis=0, props='cellcolor:{red}; bfseries: ;')
-    # print(s.to_latex())
